@@ -13,6 +13,42 @@ def catalog():
 def cart(catalog):
     return ShoppingCart(catalog)
 
+
+def test_apply_promo(cart):
+    cart.add_prod("prod_1", 1)
+    cart.apply_promo(10)
+    assert cart.total_sum() == pytest.approx(26999.1)
+
+def test_promo_no_discount(cart):
+    cart.add_prod("prod_1", 1)
+    cart.apply_promo(0)
+    assert cart.total_sum() == pytest.approx(29999)
+
+def test_promo_discount_less0(cart):
+    cart.add_prod("prod_1", 1)
+    with pytest.raises(ValueError):
+        cart.apply_promo(-1)
+
+def test_promo_discount_over100(cart):
+    cart.add_prod("prod_1", 1)
+    with pytest.raises(ValueError):
+        cart.apply_promo(101)
+
+def test_promo_full_discount(cart):
+    cart.add_prod("prod_1", 1)
+    cart.apply_promo(100)
+    assert cart.total_sum() == pytest.approx(0)
+
+def test_promo_on_empty_cart(cart):
+    cart.apply_promo(10)
+    assert cart.total_sum() == 0
+
+def test_promo_multiple_products(cart):
+    cart.add_prod("prod_1", 2)
+    cart.add_prod("prod_2", 3)
+    cart.apply_promo(10)
+    assert cart.total_sum() == pytest.approx((59998 + 9000) * 0.9)
+
 def test_quantity_stock_not_enough(cart):
     with pytest.raises(ValueError):
         cart.add_prod("prod_1", 11)
@@ -40,12 +76,12 @@ def test_add_unknown_product_raises(cart):
 
 def test_add_exceeding_stock_raises(cart):
     with pytest.raises(ValueError):
-        cart.add_prod("prod_1", 11)   # stock = 10
+        cart.add_prod("prod_1", 11)
 
 def test_add_exceeding_stock_with_existing(cart):
     cart.add_prod("prod_1", 8)
     with pytest.raises(ValueError):
-        cart.add_prod("prod_1", 5)   # 8+5 > 10
+        cart.add_prod("prod_1", 5)
 
 def test_delete_partial(cart):
     cart.add_prod("prod_1", 5)
@@ -75,10 +111,10 @@ def test_total_empty_cart(cart):
     assert cart.total_sum() == 0
 
 def test_total_one_product(cart):
-    cart.add_prod("prod_1", 2)     # 2 * 29999 = 59998
+    cart.add_prod("prod_1", 2)
     assert cart.total_sum() == 59998
 
 def test_total_multiple_products(cart):
-    cart.add_prod("prod_1", 2)     # 2 * 29999 = 59998
-    cart.add_prod("prod_2", 3)     # 3 * 3000  = 9000
+    cart.add_prod("prod_1", 2)
+    cart.add_prod("prod_2", 3)
     assert cart.total_sum() == 68998

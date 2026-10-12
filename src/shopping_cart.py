@@ -2,6 +2,7 @@ class ShoppingCart:
     def __init__(self, catalog):
         self.catalog = catalog
         self.items = {}
+        self.discount = 0
 
     def add_prod(self, product_id, quantity):
         if quantity <= 0:
@@ -37,9 +38,14 @@ class ShoppingCart:
         else:
             self.items[product_id] -= quantity
 
+    def apply_promo(self, percent):
+        if not 0 <= percent <= 100:
+            raise ValueError("Скидка должна быть в диапазоне 0..100")
+        self.discount = percent
+
     def total_sum(self):
         total = 0
         for product_id, quantity in self.items.items():
             product = self.catalog[product_id]
             total += product.price * quantity
-        return total
+        return total * (1 - self.discount / 100)

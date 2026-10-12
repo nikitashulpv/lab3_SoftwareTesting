@@ -1,24 +1,16 @@
-# Название пайплайна (отображается во вкладке Actions на GitHub)
 name: CI
 
-# События, при которых запускается пайплайн
 on:
-  # Запуск при push в указанные ветки
   push:
     branches: [ master ]
 
-  # Запуск при pull request в указанные ветки
   pull_request:
     branches: [ master ]
 
-# Задачи (jobs), которые выполняются на сервере GitHub
 jobs:
-  # Название задачи (можно любое, но осмысленное)
   test:
-    # Виртуальная машина, на которой будут выполняться шаги
     runs-on: ubuntu-latest
 
-    # Шаги пайплайна выполняются последовательно
     steps:
       # Шаг 1. Скачать код из репозитория
       - name: Checkout code
@@ -31,8 +23,6 @@ jobs:
           python-version: '3.14'
 
       # Шаг 3. Кэшировать pip-зависимости
-      # Ключ кэша зависит от ОС и содержимого requirements.txt.
-      # Если requirements.txt не меняется — зависимости берутся из кэша.
       - name: Cache pip dependencies
         uses: actions/cache@v4
         with:
